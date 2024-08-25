@@ -5,6 +5,36 @@
   </div>
 
   <div class="metrics mt-4">
+    <h2>Коротка інформація за {{ selectedMonth | date:'MMMM yyyy' }}</h2>
+
+<!-- Інші метрики -->
+<div>
+  <h3>Топ-10 користувачів за кількістю отриманих кредитів</h3>
+  <ul>
+    <li *ngFor="let user of topUsersByLoanCount">
+      {{ user.user }} - {{ user.count }} кредитів
+    </li>
+  </ul>
+</div>
+
+<div>
+  <h3>Топ-10 користувачів за сумою сплачених відсотків</h3>
+  <ul>
+    <li *ngFor="let user of topUsersByInterestPaid">
+      {{ user.user }} - {{ user.totalInterest | number:'1.2-2' }} грн.
+    </li>
+  </ul>
+</div>
+
+<div>
+  <h3>Топ-10 користувачів за співвідношенням суми сплачених відсотків до суми виданих кредитів</h3>
+  <ul>
+    <li *ngFor="let user of topUsersByRatio">
+      {{ user.user }} - {{ user.ratio | percent:'1.2-2' }}
+    </li>
+  </ul>
+</div>
+
     <h5>Метрики за {{ selectedMonth | date:'MMMM yyyy' }}:</h5>
     <ul>
       <li>Загальна кількість виданих кредитів: {{ totalLoans }}</li>

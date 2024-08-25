@@ -3,7 +3,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 
 interface LoanData {
   id: number;
@@ -25,7 +25,7 @@ interface LoanData {
 export class GeneralTableComponent implements OnInit {
   loans$ = new BehaviorSubject<LoanData[]>([]);
   filteredLoans$ = new BehaviorSubject<LoanData[]>([]);
-  
+
   issuanceDateFrom$ = new BehaviorSubject<string | null>(null);
   issuanceDateTo$ = new BehaviorSubject<string | null>(null);
   returnDateFrom$ = new BehaviorSubject<string | null>(null);
@@ -38,8 +38,8 @@ export class GeneralTableComponent implements OnInit {
   returnDateTo: string | null = null;
   showOverdueLoans: boolean = false;
 
-  pageSize: number = 10; // Кількість кредитів на сторінку
-  currentPage: number = 1; // Поточна сторінка
+  pageSize$ = new BehaviorSubject<number>(10); // Кількість кредитів на сторінку
+  currentPage$ = new BehaviorSubject<number>(1); // Поточна сторінка
 
   private apiUrl = 'https://raw.githubusercontent.com/LightOfTheSun/front-end-coding-task-db/master/db.json';
 
@@ -51,67 +51,89 @@ export class GeneralTableComponent implements OnInit {
       this.filterLoans(); // Фільтруємо дані одразу після завантаження
     });
 
-    this.issuanceDateFrom$.subscribe(() => this.filterLoans());
-    this.issuanceDateTo$.subscribe(() => this.filterLoans());
-    this.returnDateFrom$.subscribe(() => this.filterLoans());
-    this.returnDateTo$.subscribe(() => this.filterLoans());
-    this.showOverdueLoans$.subscribe(() => this.filterLoans());
+    // Список Observable для фільтрації і пагінації
+    this.pageSize$.pipe(
+      switchMap(() => this.filterLoans())
+    ).subscribe();
+
+    this.currentPage$.pipe(
+      switchMap(() => this.filterLoans())
+    ).subscribe();
+
+    this.issuanceDateFrom$.pipe(
+      switchMap(() => this.filterLoans())
+    ).subscribe();
+
+    this.issuanceDateTo$.pipe(
+      switchMap(() => this.filterLoans())
+    ).subscribe();
+
+    this.returnDateFrom$.pipe(
+      switchMap(() => this.filterLoans())
+    ).subscribe();
+
+    this.returnDateTo$.pipe(
+      switchMap(() => this.filterLoans())
+    ).subscribe();
+
+    this.showOverdueLoans$.pipe(
+      switchMap(() => this.filterLoans())
+    ).subscribe();
   }
 
-  filterLoans(): void {
-    this.filteredLoans$.next(
-      this.loans$.getValue().filter(loan => {
-        const issuanceDate = new Date(loan.issuance_date);
-        const actualReturnDate = loan.actual_return_date ? new Date(loan.actual_return_date) : null;
-        const returnDate = new Date(loan.return_date);
-        const today = new Date();
+  filterLoans(): BehaviorSubject<LoanData[]> {
+    const filteredLoans = this.loans$.getValue().filter(loan => {
+      const issuanceDate = new Date(loan.issuance_date);
+      const actualReturnDate = loan.actual_return_date ? new Date(loan.actual_return_date) : null;
+      const returnDate = new Date(loan.return_date);
+      const today = new Date();
 
-        let isValid = true;
+      let isValid = true;
 
-        if (this.issuanceDateFrom) {
-          isValid = isValid && issuanceDate >= new Date(this.issuanceDateFrom);
-        }
+      if (this.issuanceDateFrom) {
+        isValid = isValid && issuanceDate >= new Date(this.issuanceDateFrom);
+      }
 
-        if (this.issuanceDateTo) {
-          isValid = isValid && issuanceDate <= new Date(this.issuanceDateTo);
-        }
+      if (this.issuanceDateTo) {
+        isValid = isValid && issuanceDate <= new Date(this.issuanceDateTo);
+      }
 
-        if (this.returnDateFrom) {
-          isValid = isValid && returnDate >= new Date(this.returnDateFrom);
-        }
+      if (this.returnDateFrom) {
+        isValid = isValid && returnDate >= new Date(this.returnDateFrom);
+      }
 
-        if (this.returnDateTo) {
-          isValid = isValid && returnDate <= new Date(this.returnDateTo);
-        }
+      if (this.returnDateTo) {
+        isValid = isValid && returnDate <= new Date(this.returnDateTo);
+      }
 
-        if (this.showOverdueLoans) {
-          isValid = isValid && ((actualReturnDate && actualReturnDate > returnDate) || (!actualReturnDate && returnDate < today));
-        }
+      if (this.showOverdueLoans) {
+        isValid = isValid && ((actualReturnDate && actualReturnDate > returnDate) || (!actualReturnDate && returnDate < today));
+      }
 
-        return isValid;
-      })
-    );
+      return isValid;
+    });
 
-    this.applyPagination(); // Застосування пагінації
+    this.applyPagination(filteredLoans);
+    return this.filteredLoans$;
   }
 
-  applyPagination(): void {
-    const filteredLoans = this.filteredLoans$.getValue();
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    const paginatedLoans = filteredLoans.slice(startIndex, endIndex);
+  applyPagination(filteredLoans: LoanData[]): void {
+    const pageSize = this.pageSize$.getValue(); // Отримання значення з BehaviorSubject
+    const currentPage = this.currentPage$.getValue(); // Отримання значення з BehaviorSubject
+    const startIndex = (currentPage - 1) * pageSize;
+    const paginatedLoans = filteredLoans.slice(startIndex, startIndex + pageSize);
     this.filteredLoans$.next(paginatedLoans);
   }
 
   onPageChange(page: number): void {
-    this.currentPage = page;
-    this.applyPagination(); // Оновлення відображення кредитів на новій сторінці
+    this.currentPage$.next(page);
   }
 
-  onPageSizeChange(size: number): void {
-    this.pageSize = size;
-    this.currentPage = 1; // Повертаємося на першу сторінку
-    this.applyPagination(); // Оновлення відображення кредитів з новим розміром сторінки
+  onPageSizeChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    const size = parseInt(target.value, 10);
+    this.pageSize$.next(size);
+    this.currentPage$.next(1); // Повертаємося на першу сторінку
   }
 
   clearFilters(): void {

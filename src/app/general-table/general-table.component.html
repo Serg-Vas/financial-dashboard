@@ -56,21 +56,20 @@
 </table>
 
 <div class="pagination mt-3">
-  <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage <= 1">Назад</button>
-  <span>Сторінка {{ currentPage }}</span>
-  <button (click)="onPageChange(currentPage + 1)" [disabled]="filteredLoans$.getValue().length < pageSize">Вперед</button>
+  <button (click)="onPageChange(currentPage$.getValue() - 1)" [disabled]="currentPage$.getValue() <= 1">Назад</button>
+  <span>Сторінка {{ currentPage$.getValue() }}</span>
+  <button (click)="onPageChange(currentPage$.getValue() + 1)" [disabled]="filteredLoans$.getValue().length < pageSize$.getValue()">Вперед</button>
 </div>
 
 <!-- Вибір кількості кредитів на сторінку -->
 <div class="mt-3">
   <label for="pageSize">Кількість кредитів на сторінку:</label>
-  <select id="pageSize" [(ngModel)]="pageSize" (change)="onPageSizeChange(pageSize)">
-    <option [value]="5">5</option>
-    <option [value]="10">10</option>
-    <option [value]="20">20</option>
-    <option [value]="50">50</option>
+  <select id="pageSize" (change)="onPageSizeChange($event)">
+    <option value="5">5</option>
+    <option value="10" selected>10</option>
+    <option value="20">20</option>
+    <option value="50">50</option>
   </select>
-</div>
 
 
 

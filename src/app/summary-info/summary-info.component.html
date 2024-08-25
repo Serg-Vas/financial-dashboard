@@ -1,1 +1,17 @@
-<p>summary-info works!</p>
+<div class="container mt-4">
+  <div class="mb-3">
+    <label for="selectedMonth" class="form-label">Виберіть місяць:</label>
+    <input type="month" id="selectedMonth" class="form-control" [(ngModel)]="selectedMonth" (change)="calculateMetrics()">
+  </div>
+
+  <div class="metrics mt-4">
+    <h5>Метрики за {{ selectedMonth | date:'MMMM yyyy' }}:</h5>
+    <ul>
+      <li>Загальна кількість виданих кредитів: {{ totalLoans }}</li>
+      <li>Середня сума видачі кредитів: {{ averageLoanAmount | currency }}</li>
+      <li>Загальна сума виданих кредитів: {{ totalLoanAmount | currency }}</li>
+      <li>Загальна сума нарахованих відсотків: {{ totalInterestAccrued | currency }}</li>
+      <li>Загальна кількість повернених кредитів: {{ totalLoansReturned }}</li>
+    </ul>
+  </div>
+</div>

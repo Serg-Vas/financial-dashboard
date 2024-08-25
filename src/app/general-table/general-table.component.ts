@@ -38,6 +38,9 @@ export class GeneralTableComponent implements OnInit {
   returnDateTo: string | null = null;
   showOverdueLoans: boolean = false;
 
+  pageSize: number = 10; // Кількість кредитів на сторінку
+  currentPage: number = 1; // Поточна сторінка
+
   private apiUrl = 'https://raw.githubusercontent.com/LightOfTheSun/front-end-coding-task-db/master/db.json';
 
   constructor(private http: HttpClient) {}
@@ -88,6 +91,27 @@ export class GeneralTableComponent implements OnInit {
         return isValid;
       })
     );
+
+    this.applyPagination(); // Застосування пагінації
+  }
+
+  applyPagination(): void {
+    const filteredLoans = this.filteredLoans$.getValue();
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    const paginatedLoans = filteredLoans.slice(startIndex, endIndex);
+    this.filteredLoans$.next(paginatedLoans);
+  }
+
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.applyPagination(); // Оновлення відображення кредитів на новій сторінці
+  }
+
+  onPageSizeChange(size: number): void {
+    this.pageSize = size;
+    this.currentPage = 1; // Повертаємося на першу сторінку
+    this.applyPagination(); // Оновлення відображення кредитів з новим розміром сторінки
   }
 
   clearFilters(): void {

@@ -1,0 +1,31 @@
+<input type="date" [(ngModel)]="issuanceDateFrom" (change)="onIssuanceDateFromChange()">
+<input type="date" [(ngModel)]="issuanceDateTo" (change)="onIssuanceDateToChange()">
+<input type="date" [(ngModel)]="returnDateFrom" (change)="onReturnDateFromChange()">
+<input type="date" [(ngModel)]="returnDateTo" (change)="onReturnDateToChange()">
+<input type="checkbox" [(ngModel)]="showOverdueLoans" (change)="onShowOverdueLoansChange()">
+
+<!-- Додаємо фільтровані дані -->
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Issuance Date</th>
+      <th>Return Date</th>
+      <th>Actual Return Date</th>
+      <th>Body</th>
+      <th>Percent</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let loan of filteredLoans$ | async">
+      <td>{{ loan.id }}</td>
+      <td>{{ loan.issuance_date }}</td>
+      <td>{{ loan.return_date }}</td>
+      <td>{{ loan.actual_return_date }}</td>
+      <td>{{ loan.body }}</td>
+      <td>{{ loan.percent }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<button (click)="clearFilters()">Clear Filters</button>

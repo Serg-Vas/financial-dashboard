@@ -7,9 +7,10 @@ import { map } from 'rxjs/operators';
 
 interface LoanData {
   id: number;
+  user: string;
   issuance_date: string;
-  actual_return_date: string | null;
   return_date: string;
+  actual_return_date: string | null;
   body: number;
   percent: number;
 }
@@ -31,7 +32,6 @@ export class GeneralTableComponent implements OnInit {
   returnDateTo$ = new BehaviorSubject<string | null>(null);
   showOverdueLoans$ = new BehaviorSubject<boolean>(false);
 
-  // Властивості для шаблону
   issuanceDateFrom: string | null = null;
   issuanceDateTo: string | null = null;
   returnDateFrom: string | null = null;

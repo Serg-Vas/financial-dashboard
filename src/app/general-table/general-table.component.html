@@ -1,31 +1,56 @@
-<input type="date" [(ngModel)]="issuanceDateFrom" (change)="onIssuanceDateFromChange()">
-<input type="date" [(ngModel)]="issuanceDateTo" (change)="onIssuanceDateToChange()">
-<input type="date" [(ngModel)]="returnDateFrom" (change)="onReturnDateFromChange()">
-<input type="date" [(ngModel)]="returnDateTo" (change)="onReturnDateToChange()">
-<input type="checkbox" [(ngModel)]="showOverdueLoans" (change)="onShowOverdueLoansChange()">
+<div class="container mt-4">
+  <div class="mb-3">
+    <label for="issuanceDateFrom" class="form-label">Дата видачі з:</label>
+    <input type="date" id="issuanceDateFrom" class="form-control" [(ngModel)]="issuanceDateFrom" (change)="onIssuanceDateFromChange()">
+  </div>
+
+  <div class="mb-3">
+    <label for="issuanceDateTo" class="form-label">Дата видачі до:</label>
+    <input type="date" id="issuanceDateTo" class="form-control" [(ngModel)]="issuanceDateTo" (change)="onIssuanceDateToChange()">
+  </div>
+
+  <div class="mb-3">
+    <label for="returnDateFrom" class="form-label">Дата повернення з:</label>
+    <input type="date" id="returnDateFrom" class="form-control" [(ngModel)]="returnDateFrom" (change)="onReturnDateFromChange()">
+  </div>
+
+  <div class="mb-3">
+    <label for="returnDateTo" class="form-label">Дата повернення до:</label>
+    <input type="date" id="returnDateTo" class="form-control" [(ngModel)]="returnDateTo" (change)="onReturnDateToChange()">
+  </div>
+
+  <div class="form-check mb-3">
+    <input type="checkbox" id="showOverdueLoans" class="form-check-input" [(ngModel)]="showOverdueLoans" (change)="onShowOverdueLoansChange()">
+    <label for="showOverdueLoans" class="form-check-label">Показати прострочені кредити:</label>
+  </div>
+  <button (click)="clearFilters()">Clear Filters</button>
+</div>
 
 <!-- Додаємо фільтровані дані -->
-<table>
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Issuance Date</th>
-      <th>Return Date</th>
-      <th>Actual Return Date</th>
-      <th>Body</th>
-      <th>Percent</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let loan of filteredLoans$ | async">
-      <td>{{ loan.id }}</td>
-      <td>{{ loan.issuance_date }}</td>
-      <td>{{ loan.return_date }}</td>
-      <td>{{ loan.actual_return_date }}</td>
-      <td>{{ loan.body }}</td>
-      <td>{{ loan.percent }}</td>
-    </tr>
-  </tbody>
+<table class="table table-striped">
+<thead>
+  <tr>
+    <th>ID</th>
+    <th>Ім'я користувача</th>
+    <th>Дата видачі</th>
+    <th>Дата повернення</th>
+    <th>Фактична дата повернення</th>
+    <th>Сума кредиту</th>
+    <th>Відсотки</th>
+  </tr>
+</thead>
+<tbody>
+  <tr *ngFor="let loan of filteredLoans$ | async">
+    <td>{{ loan.id }}</td>
+    <td>{{ loan.user }}</td>
+    <td>{{ loan.issuance_date }}</td>
+    <td>{{ loan.return_date }}</td>
+    <td>
+      <!-- Форматування фактичної дати повернення -->
+      {{ loan.actual_return_date ? loan.actual_return_date : 'Не повернуто' }}
+    </td>
+    <td>{{ loan.body }}</td>
+    <td>{{ loan.percent }}</td>
+  </tr>
+</tbody>
 </table>
-
-<button (click)="clearFilters()">Clear Filters</button>

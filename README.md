@@ -1,27 +1,62 @@
-# FinancialDashboard
+#Financial Dashboard
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.1.
+##Опис проекту
+Цей проект є фінансовим дашбордом, розробленим з використанням Angular 17+, Bootstrap та RxJS/Signals. Дашборд надає можливість перегляду та аналізу фінансових даних через дві основні сторінки: "Загальна таблиця" та "Коротка інформація". Система використовує сигнали для реактивного керування станом додатку, а також RxJS для обробки та фільтрації даних.
 
-## Development server
+##Особливості
+Angular 17+ з використанням нових можливостей, таких як сигнали для реактивного керування даними.
+Bootstrap для створення адаптивного та мінімалістичного інтерфейсу користувача.
+RxJS для обробки та фільтрації даних, а також обчислення метрик.
+Lazy loading для підвищення продуктивності додатку.
+Реактивні фільтри для динамічного відображення даних у таблиці.
+Панель метрик, яка відображає основні фінансові показники.
+Вимоги до системи
+Перед тим, як почати, переконайтеся, що на вашій системі встановлено:
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+##Node.js (версія 14.x або вище)
+npm (версія 6.x або вище)
+Angular CLI (версія 17.x або вище)
 
-## Code scaffolding
+##Установка
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+###Якщо у вас ще не встановлено Angular CLI, виконайте наступну команду:
 
-## Build
+npm install -g @angular/cli
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+###Клонуйте репозиторій проекту:
 
-## Running unit tests
+git clone https://github.com/username/financial-dashboard.git
+cd financial-dashboard
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+###Виконайте команду для встановлення всіх необхідних залежностей:
 
-## Running end-to-end tests
+npm install
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+###Для запуску проекту виконайте команду:
 
-## Further help
+npm start
+Після цього проект буде доступний за адресою http://localhost:4200/ у вашому веб-браузері.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+##Опис функціоналу
+###1. Панель навігації
+Верхня панель навігації надає доступ до двох основних сторінок:
+
+Загальна таблиця: Відображає дані з фінансового API з можливістю їх фільтрування.
+Коротка інформація: Відображає основні фінансові метрики, такі як кількість виданих кредитів, сума виданих кредитів, нараховані відсотки, тощо.
+###2. Загальна таблиця
+Ця сторінка містить таблицю з даними, завантаженими з API. Включає наступні можливості:
+
+Фільтрація по періоду видачі кредиту (issuance_date)
+Фільтрація по періоду повернення кредиту (actual_return_date)
+Фільтрація прострочених кредитів: відображає лише кредити, які не були повернуті вчасно.
+###3. Коротка інформація
+Ця сторінка відображає панель з основними метриками:
+
+Загальна кількість виданих кредитів по місяцях.
+Середня сума виданих кредитів по місяцях.
+Загальна сума виданих кредитів по місяцях.
+Загальна сума нарахованих відсотків по місяцях.
+Загальна кількість повернених кредитів по місяцях.
+Топ-10 користувачів за кількістю отриманих кредитів.
+Топ-10 користувачів за сумою сплачених відсотків для повернених кредитів.
+Топ-10 користувачів з найбільшим співвідношенням суми сплачених відсотків до суми виданих кредитів.

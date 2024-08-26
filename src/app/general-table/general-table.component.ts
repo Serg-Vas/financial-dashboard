@@ -32,6 +32,7 @@ export class GeneralTableComponent implements OnInit {
   returnDateTo$ = new BehaviorSubject<string | null>(null);
   showOverdueLoans$ = new BehaviorSubject<boolean>(false);
 
+  //Для збереження поточного стану
   issuanceDateFrom: string | null = null;
   issuanceDateTo: string | null = null;
   returnDateFrom: string | null = null;
@@ -41,14 +42,16 @@ export class GeneralTableComponent implements OnInit {
   pageSize$ = new BehaviorSubject<number>(10); // Кількість кредитів на сторінку
   currentPage$ = new BehaviorSubject<number>(1); // Поточна сторінка
 
+  //Оброблювані дані
   private apiUrl = 'https://raw.githubusercontent.com/LightOfTheSun/front-end-coding-task-db/master/db.json';
 
   constructor(private http: HttpClient) {}
 
+  //Завантаження даних та фільтрація при завантаженні сторінки
   ngOnInit(): void {
     this.http.get<LoanData[]>(this.apiUrl).subscribe(data => {
       this.loans$.next(data);
-      this.filterLoans(); // Фільтруємо дані одразу після завантаження
+      this.filterLoans();
     });
 
     // Список Observable для фільтрації і пагінації
@@ -81,6 +84,7 @@ export class GeneralTableComponent implements OnInit {
     ).subscribe();
   }
 
+  //Фільтрація
   filterLoans(): BehaviorSubject<LoanData[]> {
     const filteredLoans = this.loans$.getValue().filter(loan => {
       const issuanceDate = new Date(loan.issuance_date);
@@ -117,25 +121,7 @@ export class GeneralTableComponent implements OnInit {
     return this.filteredLoans$;
   }
 
-  applyPagination(filteredLoans: LoanData[]): void {
-    const pageSize = this.pageSize$.getValue(); // Отримання значення з BehaviorSubject
-    const currentPage = this.currentPage$.getValue(); // Отримання значення з BehaviorSubject
-    const startIndex = (currentPage - 1) * pageSize;
-    const paginatedLoans = filteredLoans.slice(startIndex, startIndex + pageSize);
-    this.filteredLoans$.next(paginatedLoans);
-  }
-
-  onPageChange(page: number): void {
-    this.currentPage$.next(page);
-  }
-
-  onPageSizeChange(event: Event): void {
-    const target = event.target as HTMLSelectElement;
-    const size = parseInt(target.value, 10);
-    this.pageSize$.next(size);
-    this.currentPage$.next(1); // Повертаємося на першу сторінку
-  }
-
+  //Очищення фільтрів
   clearFilters(): void {
     this.issuanceDateFrom = null;
     this.issuanceDateTo = null;
@@ -149,10 +135,33 @@ export class GeneralTableComponent implements OnInit {
     this.returnDateTo$.next(null);
     this.showOverdueLoans$.next(false);
 
-    this.filterLoans(); // Застосування фільтрів після скидання
+    this.filterLoans();
   }
 
-  // Методи для обробки змін у формі
+  //Пагінація, розбиваючи дані на сторінки відповідно до кількості кредитів для сторінки та номера сторінки
+  applyPagination(filteredLoans: LoanData[]): void {
+    const pageSize = this.pageSize$.getValue();
+    const currentPage = this.currentPage$.getValue();
+    const startIndex = (currentPage - 1) * pageSize;
+    const paginatedLoans = filteredLoans.slice(startIndex, startIndex + pageSize);
+    this.filteredLoans$.next(paginatedLoans);
+  }
+
+  //Оновлюємо поточну сторінку при зміні номера сторінки
+  onPageChange(page: number): void {
+    this.currentPage$.next(page);
+  }
+
+  //Скидаємо поточну сторінку до першої після зміни кількості кредитів для сторінки
+  onPageSizeChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    const size = parseInt(target.value, 10);
+    this.pageSize$.next(size);
+    this.currentPage$.next(1);
+  }
+
+
+  // Методи для обробки змін
   onIssuanceDateFromChange(): void {
     this.issuanceDateFrom$.next(this.issuanceDateFrom);
   }

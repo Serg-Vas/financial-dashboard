@@ -1,47 +1,55 @@
 <div class="container mt-4">
-  <div class="mb-3">
-    <label for="selectedMonth" class="form-label">Виберіть місяць:</label>
-    <input type="month" id="selectedMonth" class="form-control" [(ngModel)]="selectedMonth" (change)="calculateMetrics()">
-  </div>
+  <div class="metrics mt-4 body">
+    <div class="mb-3">
+      <label for="selectedMonth" class="form-label">Виберіть місяць:</label>
+      <input type="month" id="selectedMonth" class="form-control" [(ngModel)]="selectedMonth" (change)="calculateMetrics()">
+    </div>
+    <div class="metrics mt-4">
+      <h3>Метрики:</h3>
+      <div class="metrics-grid">
+        <div class="metric-item">
+          <p>Загальна кількість кредитів:</p>
+          <p>{{ totalLoans() }} </p>
+        </div>
+        <div class="metric-item">
+          <p>Середня сума кредиту:</p>
+          <p>{{ averageLoanAmount() | number:'1.2-2' }} грн</p>
+        </div>
+        <div class="metric-item">
+          <p>Загальна сума кредитів:</p>
+          <p>{{ totalLoanAmount() | number:'1.2-2' }} грн</p>
+        </div>
+        <div class="metric-item">
+          <p>Загальна сума сплачених відсотків:</p>
+          <p>{{ totalInterestAccrued() | number:'1.2-2' }} грн</p>
+        </div>
+        <div class="metric-item">
+          <p>Кількість повернених кредитів:</p>
+          <p>{{ totalLoansReturned() }} </p>
+        </div>
+      </div>
+    
+    <div class="sections">
+      <div class="section">
+        <h3>Топ-10 користувачів за кількістю отриманих кредитів:</h3>
+        <ul>
+          <li *ngFor="let user of topUsersByLoanCount()">{{ user.user }}: {{ user.count }} </li>
+        </ul>
+      </div>
 
-  <div class="metrics mt-4">
-    <h2>Коротка інформація за {{ selectedMonth | date:'MMMM yyyy' }}</h2>
+      <div class="section">
+        <h3>Топ-10 користувачів за сумою сплачених відсотків для повернених кредитів:</h3>
+        <ul>
+          <li *ngFor="let user of topUsersByTotalInterest()">{{ user.user }}: {{ user.totalInterest | number:'1.2' }} грн</li>
+        </ul>
+      </div>
 
-<!-- Інші метрики -->
-<div>
-  <h3>Топ-10 користувачів за кількістю отриманих кредитів</h3>
-  <ul>
-    <li *ngFor="let user of topUsersByLoanCount">
-      {{ user.user }} - {{ user.count }} кредитів
-    </li>
-  </ul>
-</div>
-
-<div>
-  <h3>Топ-10 користувачів за сумою сплачених відсотків</h3>
-  <ul>
-    <li *ngFor="let user of topUsersByInterestPaid">
-      {{ user.user }} - {{ user.totalInterest | number:'1.2-2' }} грн.
-    </li>
-  </ul>
-</div>
-
-<div>
-  <h3>Топ-10 користувачів за співвідношенням суми сплачених відсотків до суми виданих кредитів</h3>
-  <ul>
-    <li *ngFor="let user of topUsersByRatio">
-      {{ user.user }} - {{ user.ratio | percent:'1.2-2' }}
-    </li>
-  </ul>
-</div>
-
-    <h5>Метрики за {{ selectedMonth | date:'MMMM yyyy' }}:</h5>
-    <ul>
-      <li>Загальна кількість виданих кредитів: {{ totalLoans }}</li>
-      <li>Середня сума видачі кредитів: {{ averageLoanAmount | currency }}</li>
-      <li>Загальна сума виданих кредитів: {{ totalLoanAmount | currency }}</li>
-      <li>Загальна сума нарахованих відсотків: {{ totalInterestAccrued | currency }}</li>
-      <li>Загальна кількість повернених кредитів: {{ totalLoansReturned }}</li>
-    </ul>
+      <div class="section">
+        <h3>Топ-10 користувачів з найбільшим співвідношенням суми сплачених відсотків до суми виданих кредитів:</h3>
+        <ul>
+          <li *ngFor="let user of topUsersByInterestToBodyRatio()">{{ user.user }}: {{ user.ratio }} коеф.</li>
+        </ul>
+      </div>
+    </div>
   </div>
 </div>

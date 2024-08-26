@@ -1,9 +1,10 @@
-<h1>Angular Router App</h1>
-<nav>
-  <ul>
-    <li><a routerLink="/general" routerLinkActive="active" ariaCurrentWhenActive="page">Загальна таблиця</a></li>
-    <li><a routerLink="/summary" routerLinkActive="active" ariaCurrentWhenActive="page">Коротка інформація</a></li>
-  </ul>
-</nav>
-<!-- The routed views render in the <router-outlet>-->
+<header>
+  <h1>Фінансовий дашборд</h1>
+  <nav class="header">
+    <ul>
+      <li><a routerLink="/general" routerLinkActive="active" ariaCurrentWhenActive="page">Загальна таблиця</a></li>
+      <li><a routerLink="/summary" routerLinkActive="active" ariaCurrentWhenActive="page">Коротка інформація</a></li>
+    </ul>
+  </nav>
+</header>
 <router-outlet></router-outlet>

@@ -1,24 +1,17 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient} from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-interface LoanData {
-  id: number;
-  user: string;
-  issuance_date: string;
-  actual_return_date: string | null;
-  return_date: string;
-  body: number;
-  percent: number;
-}
+import { LoanData } from '../models/loan-data.model';
+import { LoanDataService } from '../services/loan-data.service';
 
 @Component({
   selector: 'app-summary-info',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './summary-info.component.html',
-  styleUrls: ['./summary-info.component.scss']
+  styleUrls: ['./summary-info.component.scss'],
+  providers: [LoanDataService]
 })
 export class SummaryInfoComponent implements OnInit {
   loans = signal<LoanData[]>([]);
@@ -35,14 +28,10 @@ export class SummaryInfoComponent implements OnInit {
   topUsersByTotalInterest = signal<{ user: string; totalInterest: number }[]>([]);
   topUsersByInterestToBodyRatio = signal<{ user: string; ratio: number }[]>([]);
 
-  // Обробляємі дані
-  private apiUrl = 'https://raw.githubusercontent.com/LightOfTheSun/front-end-coding-task-db/master/db.json';
+  constructor(private loanDataService: LoanDataService) {}
 
-  constructor(private http: HttpClient) {}
-
-  // Ініціалізація
   ngOnInit(): void {
-    this.http.get<LoanData[]>(this.apiUrl).subscribe(data => {
+    this.loanDataService.loadLoans().subscribe((data) => {
       this.loans.set(data);
       this.calculateMetrics();
     });

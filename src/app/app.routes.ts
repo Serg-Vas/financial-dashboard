@@ -1,8 +1,14 @@
 import { Routes } from '@angular/router';
-import { GeneralTableComponent } from './general-table/general-table.component';
-import { SummaryInfoComponent } from './summary-info/summary-info.component';
 
 export const routes: Routes = [
-    { path: 'general', component: GeneralTableComponent},
-    { path: 'summary', component: SummaryInfoComponent},
-];
+    {
+      path: 'general',
+      loadComponent: () =>
+        import('./general-table/general-table.component').then(m => m.GeneralTableComponent),
+    },
+    {
+      path: 'summary',
+      loadComponent: () =>
+        import('./summary-info/summary-info.component').then(m => m.SummaryInfoComponent),
+    },
+  ];

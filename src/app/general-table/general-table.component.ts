@@ -1,26 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient} from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-
-interface LoanData {
-  id: number;
-  user: string;
-  issuance_date: string;
-  return_date: string;
-  actual_return_date: string | null;
-  body: number;
-  percent: number;
-}
+import { LoanData } from '../models/loan-data.model';
+import { LoanDataService } from '../services/loan-data.service';
 
 @Component({
   selector: 'app-general-table',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './general-table.component.html',
-  styleUrls: ['./general-table.component.scss']
+  styleUrls: ['./general-table.component.scss'],
+  providers: [LoanDataService]
 })
 export class GeneralTableComponent implements OnInit {
   loans$ = new BehaviorSubject<LoanData[]>([]);
@@ -42,16 +35,12 @@ export class GeneralTableComponent implements OnInit {
   pageSize$ = new BehaviorSubject<number>(10); // Кількість кредитів на сторінку
   currentPage$ = new BehaviorSubject<number>(1); // Поточна сторінка
 
-  //Оброблювані дані
-  private apiUrl = 'https://raw.githubusercontent.com/LightOfTheSun/front-end-coding-task-db/master/db.json';
+  constructor(private loanDataService: LoanDataService) {}
 
-  constructor(private http: HttpClient) {}
-
-  //Завантаження даних та фільтрація при завантаженні сторінки
   ngOnInit(): void {
-    this.http.get<LoanData[]>(this.apiUrl).subscribe(data => {
+    this.loanDataService.loadLoans().subscribe((data) => {
       this.loans$.next(data);
-      this.filterLoans();
+      this.filterLoans(); 
     });
 
     // Список Observable для фільтрації і пагінації

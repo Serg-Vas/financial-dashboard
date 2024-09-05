@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LoanData } from '../models/loan-data.model';
 import { LoanDataService } from '../services/loan-data.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-general-table',
   standalone: true,
-  imports: [CommonModule, FormsModule], // Include FormsModule here
+  imports: [CommonModule, FormsModule],
   templateUrl: './general-table.component.html',
   styleUrls: ['./general-table.component.scss'],
   providers: [LoanDataService]
@@ -23,6 +25,8 @@ export class GeneralTableComponent implements OnInit {
   pageSize = signal<number>(10);
   currentPage = signal<number>(1);
 
+  private destroy$ = new Subject<void>();
+
   constructor(private loanDataService: LoanDataService) {}
 
   ngOnInit(): void {
@@ -30,10 +34,12 @@ export class GeneralTableComponent implements OnInit {
   }
 
   loadLoans(): void {
-    this.loanDataService.loadLoans().subscribe(data => {
-      this.loans.set(data);
-      this.filterLoans();
-    });
+    this.loanDataService.loadLoans()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data => {
+        this.loans.set(data);
+        this.filterLoans();
+      });
   }
 
   filterLoans(): void {
@@ -55,7 +61,7 @@ export class GeneralTableComponent implements OnInit {
     if (this.showOverdueLoans()) {
       filtered = filtered.filter(loan => !loan.actual_return_date && new Date(loan.return_date) < new Date());
     }
-    console.log('1');
+    console.log('filter function called');
 
     this.applyPagination(filtered);
   }
@@ -84,6 +90,12 @@ export class GeneralTableComponent implements OnInit {
   onPageSizeChange(event: Event): void {
     const target = event.target as HTMLSelectElement;
     this.pageSize.set(Number(target.value));
-    this.currentPage.set(1); // Reset to the first page when page size changes
+    this.currentPage.set(1);
+  }
+
+  ngOnDestroy(): void {
+    console.log('unsubscribe called');
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

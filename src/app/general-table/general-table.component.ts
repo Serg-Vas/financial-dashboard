@@ -5,6 +5,7 @@ import { LoanData } from '../models/loan-data.model';
 import { LoanDataService } from '../services/loan-data.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { FilterService } from '../services/filtration.service'
 
 @Component({
   selector: 'app-general-table',
@@ -27,7 +28,7 @@ export class GeneralTableComponent implements OnInit {
 
   private destroy$ = new Subject<void>();
 
-  constructor(private loanDataService: LoanDataService) {}
+  constructor(private loanDataService: LoanDataService, private FilterService: FilterService) {}
 
   ngOnInit(): void {
     this.loadLoans();
@@ -43,26 +44,15 @@ export class GeneralTableComponent implements OnInit {
   }
 
   filterLoans(): void {
-    let filtered = this.loans();
+    const filters = {
+      issuanceDateFrom: this.issuanceDateFrom(),
+      issuanceDateTo: this.issuanceDateTo(),
+      returnDateFrom: this.returnDateFrom(),
+      returnDateTo: this.returnDateTo(),
+      showOverdueLoans: this.showOverdueLoans()
+    };
 
-    // Apply filters
-    if (this.issuanceDateFrom()) {
-      filtered = filtered.filter(loan => new Date(loan.issuance_date) >= new Date(this.issuanceDateFrom()!));
-    }
-    if (this.issuanceDateTo()) {
-      filtered = filtered.filter(loan => new Date(loan.issuance_date) <= new Date(this.issuanceDateTo()!));
-    }
-    if (this.returnDateFrom()) {
-      filtered = filtered.filter(loan => new Date(loan.return_date) >= new Date(this.returnDateFrom()!));
-    }
-    if (this.returnDateTo()) {
-      filtered = filtered.filter(loan => new Date(loan.return_date) <= new Date(this.returnDateTo()!));
-    }
-    if (this.showOverdueLoans()) {
-      filtered = filtered.filter(loan => !loan.actual_return_date && new Date(loan.return_date) < new Date());
-    }
-    console.log('filter function called');
-
+    const filtered = this.FilterService.filterLoans(this.loans(), filters);
     this.applyPagination(filtered);
   }
 

@@ -13,7 +13,7 @@ import { FilterService } from '../services/filtration.service'
   imports: [CommonModule, FormsModule],
   templateUrl: './general-table.component.html',
   styleUrls: ['./general-table.component.scss'],
-  providers: [LoanDataService]
+  providers: [LoanDataService, FilterService]
 })
 export class GeneralTableComponent implements OnInit {
   loans = signal<LoanData[]>([]);

@@ -1,67 +1,89 @@
 <div class="body">
-  <div class="container mt-4">
-    <h3 class="mb-4">Фільтри Кредитів</h3>
-    
-    <div class="filter-row mb-3">
-      <div class="filter-group">
-        <label for="issuanceDateFrom" class="form-label">Дата видачі з:</label>
-        <input type="date" id="issuanceDateFrom" class="form-control" [(ngModel)]="issuanceDateFrom" (ngModelChange)="filterLoans()">
-      </div>
-      <div class="filter-group">
-        <label for="issuanceDateTo" class="form-label">Дата видачі до:</label>
-        <input type="date" id="issuanceDateTo" class="form-control" [(ngModel)]="issuanceDateTo" (ngModelChange)="filterLoans()">
-      </div>
-    </div>
-    
-    <div class="filter-row mb-3">
-      <div class="filter-group">
-        <label for="returnDateFrom" class="form-label">Дата повернення з:</label>
-        <input type="date" id="returnDateFrom" class="form-control" [(ngModel)]="returnDateFrom" (ngModelChange)="filterLoans()">
-      </div>
-      <div class="filter-group">
-        <label for="returnDateTo" class="form-label">Дата повернення до:</label>
-        <input type="date" id="returnDateTo" class="form-control" [(ngModel)]="returnDateTo" (ngModelChange)="filterLoans()">
-      </div>
-    </div>
 
-    <div class="form-check mb-3">
-      <input type="checkbox" id="showOverdueLoans" class="form-check-input" [(ngModel)]="showOverdueLoans" (ngModelChange)="filterLoans()">
-      <label for="showOverdueLoans" class="form-check-label">Показати лише прострочені кредити:</label>
+  <!-- Лоадер -->
+  <div *ngIf="loading" class="d-flex justify-content-center align-items-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Завантаження...</span>
     </div>
-    
-    <button class="btn btn-secondary" (click)="clearFilters()">Очистити фільтри</button>
   </div>
 
-  <!-- Фільтри -->
-  <table class="table table-striped mt-4">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Ім'я користувача</th>
-        <th>Дата видачі</th>
-        <th>Дата повернення</th>
-        <th>Фактична дата повернення</th>
-        <th>Сума кредиту</th>
-        <th>Відсотки</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let loan of filteredLoans()">
-        <td>{{ loan.id }}</td>
-        <td>{{ loan.user }}</td>
-        <td>{{ loan.issuance_date }}</td>
-        <td>{{ loan.return_date }}</td>
-        <td>{{ loan.actual_return_date ? loan.actual_return_date : 'Не повернуто' }}</td>
-        <td>{{ loan.body }}</td>
-        <td>{{ loan.percent }}</td>
-      </tr>
-    </tbody>
-  </table>
+  <div *ngIf="!loading">
+    <div class="container mt-4">
+      <h3 class="mb-4">Фільтри Кредитів</h3>
+
+
+      <div class="filter-row mb-3">
+        <div class="filter-group">
+          <label for="issuanceDateFrom" class="form-label">Дата видачі з:</label>
+          <input type="date" id="issuanceDateFrom" class="form-control" [(ngModel)]="issuanceDateFrom"
+            (ngModelChange)="filterLoans()">
+        </div>
+        <div class="filter-group">
+          <label for="issuanceDateTo" class="form-label">Дата видачі до:</label>
+          <input type="date" id="issuanceDateTo" class="form-control" [(ngModel)]="issuanceDateTo"
+            (ngModelChange)="filterLoans()">
+        </div>
+      </div>
+
+      <div class="filter-row mb-3">
+        <div class="filter-group">
+          <label for="returnDateFrom" class="form-label">Дата повернення з:</label>
+          <input type="date" id="returnDateFrom" class="form-control" [(ngModel)]="returnDateFrom"
+            (ngModelChange)="filterLoans()">
+        </div>
+        <div class="filter-group">
+          <label for="returnDateTo" class="form-label">Дата повернення до:</label>
+          <input type="date" id="returnDateTo" class="form-control" [(ngModel)]="returnDateTo"
+            (ngModelChange)="filterLoans()">
+        </div>
+      </div>
+
+      <div class="form-check mb-3">
+        <input type="checkbox" id="showOverdueLoans" class="form-check-input" [(ngModel)]="showOverdueLoans"
+          (ngModelChange)="filterLoans()">
+        <label for="showOverdueLoans" class="form-check-label">Показати лише прострочені кредити:</label>
+      </div>
+
+      <button class="btn btn-secondary" (click)="clearFilters()">Очистити фільтри</button>
+    </div>
+
+    <!-- Фільтри -->
+    <table class="table table-striped mt-4" *ngIf="filteredLoans().length > 0; else noData">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Ім'я користувача</th>
+          <th>Дата видачі</th>
+          <th>Дата повернення</th>
+          <th>Фактична дата повернення</th>
+          <th>Сума кредиту</th>
+          <th>Відсотки</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let loan of filteredLoans()">
+          <td>{{ loan.id }}</td>
+          <td>{{ loan.user }}</td>
+          <td>{{ loan.issuance_date }}</td>
+          <td>{{ loan.return_date | date:'dd.MM.yyyy' }}</td>
+          <td>{{ loan.actual_return_date ? (loan.actual_return_date | date:'dd.MM.yyyy') : 'Не повернуто' }}</td>
+          <td>{{ loan.body | number:'1.2-2' }} грн</td>
+          <td>{{ loan.percent | number:'1.2-2' }} грн</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ng-template #noData>
+      <div class="alert alert-warning mt-3" role="alert">
+        <strong>Увага!</strong> Немає кредитів, що відповідають заданим критеріям.
+      </div>
+    </ng-template>
+  </div>
 
   <!-- Пагінація -->
-  <div class="pagination mt-3 d-flex justify-content-between align-items-center">
+  <div class="pagination mt-3 d-flex justify-content-between align-items-center" *ngIf="filteredLoans().length > 0">
     <button class="btn btn-primary" (click)="onPageChange(currentPage() - 1)"
-    [disabled]="currentPage() <= 1">Назад</button>
+      [disabled]="currentPage() <= 1">Назад</button>
     <span>Сторінка {{ currentPage() }}</span>
     <button class="btn btn-primary" (click)="onPageChange(currentPage() + 1)"
       [disabled]="filteredLoans().length < pageSize()">Вперед</button>
@@ -77,4 +99,5 @@
       <option value="50">50</option>
     </select>
   </div>
+
 </div>

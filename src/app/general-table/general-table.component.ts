@@ -26,6 +26,8 @@ export class GeneralTableComponent implements OnInit {
   pageSize = signal<number>(10);
   currentPage = signal<number>(1);
 
+  loading = false;
+
   private destroy$ = new Subject<void>();
 
   constructor(private loanDataService: LoanDataService, private FilterService: FilterService) {}
@@ -35,15 +37,16 @@ export class GeneralTableComponent implements OnInit {
   }
 
   loadLoans(): void {
-    this.loanDataService.loadLoans()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(data => {
-        this.loans.set(data);
-        this.filterLoans();
-      });
+    this.loading = true;
+    this.loanDataService.loadLoans().subscribe(data => {
+      this.loans.set(data);
+      this.filterLoans();
+      this.loading = false;
+    });
   }
 
   filterLoans(): void {
+    console.log("filter called");
     const filters = {
       issuanceDateFrom: this.issuanceDateFrom(),
       issuanceDateTo: this.issuanceDateTo(),

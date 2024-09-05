@@ -2,7 +2,7 @@
   <div class="metrics mt-4 body">
     <div class="mb-3">
       <label for="selectedMonth" class="form-label">Виберіть місяць:</label>
-      <input type="month" id="selectedMonth" class="form-control" [(ngModel)]="selectedMonth" (change)="calculateMetrics()">
+      <input type="date" id="selectedMonth" class="form-control" [(ngModel)]="selectedMonth" (change)="calculateMetrics()">
     </div>
     <div class="metrics mt-4">
       <h3>Метрики:</h3>

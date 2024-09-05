@@ -1,5 +1,10 @@
 .body{
-  margin: 8px;
+  margin: 1%;
+}
+
+.form-select {
+  width: 60px;
+  display: inline;
 }
 
 .container {
@@ -11,7 +16,7 @@
       font-weight: 600;
       margin-bottom: 5px;
     }
-  
+    
     .form-control {
       padding: 8px;
       font-size: 1rem;
@@ -19,7 +24,7 @@
       border-radius: 4px;
       width: 100%;
     }
-  
+    
     .form-check-label {
       margin-left: 5px;
     }
@@ -70,10 +75,7 @@
   }
   
   .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 20px;
+    justify-content: center !important;
   
     button {
       margin: 0 10px;
@@ -143,7 +145,4 @@
     align-items: center;
   }
 
-  .form-select {
-    margin-top: 1rem;
-  }
 }

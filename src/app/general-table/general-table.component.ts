@@ -92,11 +92,11 @@ export class GeneralTableComponent implements OnInit {
       }
 
       if (this.returnDateFrom) {
-        isValid = isValid && returnDate >= new Date(this.returnDateFrom);
+        isValid = isValid && (actualReturnDate !== null && actualReturnDate >= new Date(this.returnDateFrom));
       }
-
+  
       if (this.returnDateTo) {
-        isValid = isValid && returnDate <= new Date(this.returnDateTo);
+        isValid = isValid && (actualReturnDate !== null && actualReturnDate <= new Date(this.returnDateTo));
       }
 
       if (this.showOverdueLoans) {

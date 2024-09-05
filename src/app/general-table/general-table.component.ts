@@ -6,6 +6,7 @@ import { BehaviorSubject } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { LoanData } from '../models/loan-data.model';
 import { LoanDataService } from '../services/loan-data.service';
+import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-general-table',
@@ -43,38 +44,22 @@ export class GeneralTableComponent implements OnInit {
       this.filterLoans(); 
     });
 
-    // Список Observable для фільтрації і пагінації
-    this.pageSize$.pipe(
-      switchMap(() => this.filterLoans())
-    ).subscribe();
-
-    this.currentPage$.pipe(
-      switchMap(() => this.filterLoans())
-    ).subscribe();
-
-    this.issuanceDateFrom$.pipe(
-      switchMap(() => this.filterLoans())
-    ).subscribe();
-
-    this.issuanceDateTo$.pipe(
-      switchMap(() => this.filterLoans())
-    ).subscribe();
-
-    this.returnDateFrom$.pipe(
-      switchMap(() => this.filterLoans())
-    ).subscribe();
-
-    this.returnDateTo$.pipe(
-      switchMap(() => this.filterLoans())
-    ).subscribe();
-
-    this.showOverdueLoans$.pipe(
-      switchMap(() => this.filterLoans())
-    ).subscribe();
+    combineLatest([
+      this.issuanceDateFrom$,
+      this.issuanceDateTo$,
+      this.returnDateFrom$,
+      this.returnDateTo$,
+      this.showOverdueLoans$,
+      this.pageSize$,
+      this.currentPage$
+    ]).subscribe(() => {
+      this.filterLoans(); 
+    });
   }
 
   //Фільтрація
-  filterLoans(): BehaviorSubject<LoanData[]> {
+  filterLoans(): void {
+    console.log('filterLoans called');
     const filteredLoans = this.loans$.getValue().filter(loan => {
       const issuanceDate = new Date(loan.issuance_date);
       const actualReturnDate = loan.actual_return_date ? new Date(loan.actual_return_date) : null;
@@ -107,7 +92,6 @@ export class GeneralTableComponent implements OnInit {
     });
 
     this.applyPagination(filteredLoans);
-    return this.filteredLoans$;
   }
 
   //Очищення фільтрів

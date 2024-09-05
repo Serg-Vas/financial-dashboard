@@ -5,72 +5,66 @@
     <div class="filter-row mb-3">
       <div class="filter-group">
         <label for="issuanceDateFrom" class="form-label">Дата видачі з:</label>
-        <input type="date" id="issuanceDateFrom" class="form-control" [(ngModel)]="issuanceDateFrom"
-        (change)="onIssuanceDateFromChange()">
+        <input type="date" id="issuanceDateFrom" class="form-control" [(ngModel)]="issuanceDateFrom" (ngModelChange)="filterLoans()">
       </div>
       <div class="filter-group">
         <label for="issuanceDateTo" class="form-label">Дата видачі до:</label>
-        <input type="date" id="issuanceDateTo" class="form-control" [(ngModel)]="issuanceDateTo"
-        (change)="onIssuanceDateToChange()">
+        <input type="date" id="issuanceDateTo" class="form-control" [(ngModel)]="issuanceDateTo" (ngModelChange)="filterLoans()">
       </div>
     </div>
     
     <div class="filter-row mb-3">
-      <div class="filter-group-right">
+      <div class="filter-group">
         <label for="returnDateFrom" class="form-label">Дата повернення з:</label>
-        <input type="date" id="returnDateFrom" class="form-control" [(ngModel)]="returnDateFrom"
-        (change)="onReturnDateFromChange()">
+        <input type="date" id="returnDateFrom" class="form-control" [(ngModel)]="returnDateFrom" (ngModelChange)="filterLoans()">
       </div>
-      <div class="filter-group-right">
+      <div class="filter-group">
         <label for="returnDateTo" class="form-label">Дата повернення до:</label>
-      <input type="date" id="returnDateTo" class="form-control" [(ngModel)]="returnDateTo"
-      (change)="onReturnDateToChange()">
+        <input type="date" id="returnDateTo" class="form-control" [(ngModel)]="returnDateTo" (ngModelChange)="filterLoans()">
+      </div>
     </div>
+
+    <div class="form-check mb-3">
+      <input type="checkbox" id="showOverdueLoans" class="form-check-input" [(ngModel)]="showOverdueLoans" (ngModelChange)="filterLoans()">
+      <label for="showOverdueLoans" class="form-check-label">Показати лише прострочені кредити:</label>
+    </div>
+    
+    <button class="btn btn-secondary" (click)="clearFilters()">Очистити фільтри</button>
   </div>
-  
 
-  <div class="form-check mb-3">
-    <input type="checkbox" id="showOverdueLoans" class="form-check-input" [(ngModel)]="showOverdueLoans"
-    (change)="onShowOverdueLoansChange()">
-    <label for="showOverdueLoans" class="form-check-label">Показати прострочені кредити:</label>
-  </div>
-  
-  <button class="btn btn-secondary" (click)="clearFilters()">Очистити фільтри</button>
-</div>
+  <!-- Фільтри -->
+  <table class="table table-striped mt-4">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Ім'я користувача</th>
+        <th>Дата видачі</th>
+        <th>Дата повернення</th>
+        <th>Фактична дата повернення</th>
+        <th>Сума кредиту</th>
+        <th>Відсотки</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let loan of filteredLoans()">
+        <td>{{ loan.id }}</td>
+        <td>{{ loan.user }}</td>
+        <td>{{ loan.issuance_date }}</td>
+        <td>{{ loan.return_date }}</td>
+        <td>{{ loan.actual_return_date ? loan.actual_return_date : 'Не повернуто' }}</td>
+        <td>{{ loan.body }}</td>
+        <td>{{ loan.percent }}</td>
+      </tr>
+    </tbody>
+  </table>
 
-<!-- Фільтри -->
-<table class="table table-striped mt-4">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Ім'я користувача</th>
-      <th>Дата видачі</th>
-      <th>Дата повернення</th>
-      <th>Фактична дата повернення</th>
-      <th>Сума кредиту</th>
-      <th>Відсотки</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let loan of filteredLoans$ | async">
-      <td>{{ loan.id }}</td>
-      <td>{{ loan.user }}</td>
-      <td>{{ loan.issuance_date }}</td>
-      <td>{{ loan.return_date }}</td>
-      <td>{{ loan.actual_return_date ? loan.actual_return_date : 'Не повернуто' }}</td>
-      <td>{{ loan.body }}</td>
-      <td>{{ loan.percent }}</td>
-    </tr>
-  </tbody>
-</table>
-
-<!-- Пагінація -->
-<div class="pagination mt-3 d-flex justify-content-between align-items-center">
-  <button class="btn btn-primary" (click)="onPageChange(currentPage$.getValue() - 1)"
-  [disabled]="currentPage$.getValue() <= 1">Назад</button>
-  <span>Сторінка {{ currentPage$.getValue() }}</span>
-  <button class="btn btn-primary" (click)="onPageChange(currentPage$.getValue() + 1)"
-    [disabled]="filteredLoans$.getValue().length < pageSize$.getValue()">Вперед</button>
+  <!-- Пагінація -->
+  <div class="pagination mt-3 d-flex justify-content-between align-items-center">
+    <button class="btn btn-primary" (click)="onPageChange(currentPage() - 1)"
+    [disabled]="currentPage() <= 1">Назад</button>
+    <span>Сторінка {{ currentPage() }}</span>
+    <button class="btn btn-primary" (click)="onPageChange(currentPage() + 1)"
+      [disabled]="filteredLoans().length < pageSize()">Вперед</button>
   </div>
 
   <!-- Вибір кількості кредитів на сторінку -->

@@ -84,17 +84,21 @@ export class GeneralTableComponent implements OnInit {
   }
   
   onPageChange(page: number): void {
+    console.log('Changing page to:', page);
     this.currentPage.set(page);
+    this.filterLoans();
   }
-
+  
   onPageSizeChange(event: Event): void {
     const target = event.target as HTMLSelectElement;
+    console.log('Changing page size to:', target.value);
     this.pageSize.set(Number(target.value));
     this.currentPage.set(1);
+    this.filterLoans();
   }
 
   ngOnDestroy(): void {
-    console.log('unsubscribe called');
+    console.log('unsubscribe 1 called');
     this.destroy$.next();
     this.destroy$.complete();
   }

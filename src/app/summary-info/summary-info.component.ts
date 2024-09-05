@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LoanData } from '../models/loan-data.model';
 import { LoanDataService } from '../services/loan-data.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-summary-info',
@@ -28,10 +30,12 @@ export class SummaryInfoComponent implements OnInit {
   topUsersByTotalInterest = signal<{ user: string; totalInterest: number }[]>([]);
   topUsersByInterestToBodyRatio = signal<{ user: string; ratio: number }[]>([]);
 
+  private destroy$ = new Subject<void>();
+
   constructor(private loanDataService: LoanDataService) {}
 
   ngOnInit(): void {
-    this.loanDataService.loadLoans().subscribe((data) => {
+    this.loanDataService.loadLoans().pipe(takeUntil(this.destroy$)).subscribe((data) => {
       this.loans.set(data);
       this.calculateMetrics();
     });
@@ -106,5 +110,11 @@ export class SummaryInfoComponent implements OnInit {
         .sort((a, b) => b.ratio - a.ratio)
         .slice(0, 10));
     }
+  }
+
+  ngOnDestroy(): void {
+    console.log('unsubscribe 2 called');
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

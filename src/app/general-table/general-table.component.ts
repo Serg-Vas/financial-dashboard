@@ -1,11 +1,11 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, inject, DestroyRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LoanData } from '../models/loan-data.model';
 import { LoanDataService } from '../services/loan-data.service';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { FilterService } from '../services/filtration.service'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FilterService } from '../services/filtration.service';
+import { PaginationService } from '../services/pagination.service';
 
 @Component({
   selector: 'app-general-table',
@@ -13,7 +13,7 @@ import { FilterService } from '../services/filtration.service'
   imports: [CommonModule, FormsModule],
   templateUrl: './general-table.component.html',
   styleUrls: ['./general-table.component.scss'],
-  providers: [LoanDataService, FilterService]
+  providers: [LoanDataService, FilterService, PaginationService]
 })
 export class GeneralTableComponent implements OnInit {
   loans = signal<LoanData[]>([]);
@@ -28,8 +28,9 @@ export class GeneralTableComponent implements OnInit {
 
   loading = false;
 
-  private destroy$ = new Subject<void>();
-
+  private destroyRef = inject(DestroyRef);
+  private paginationService = inject(PaginationService);
+  
   constructor(private loanDataService: LoanDataService, private FilterService: FilterService) {}
 
   ngOnInit(): void {
@@ -38,7 +39,7 @@ export class GeneralTableComponent implements OnInit {
 
   loadLoans(): void {
     this.loading = true;
-    this.loanDataService.loadLoans().subscribe(data => {
+    this.loanDataService.loadLoans().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(data => {
       this.loans.set(data);
       this.filterLoans();
       this.loading = false;
@@ -46,7 +47,6 @@ export class GeneralTableComponent implements OnInit {
   }
 
   filterLoans(): void {
-    console.log("filter called");
     const filters = {
       issuanceDateFrom: this.issuanceDateFrom(),
       issuanceDateTo: this.issuanceDateTo(),
@@ -69,30 +69,19 @@ export class GeneralTableComponent implements OnInit {
   }
   
   applyPagination(filteredLoans: LoanData[]): void {
-    const pageSize = this.pageSize();
-    const currentPage = this.currentPage();
-    const startIndex = (currentPage - 1) * pageSize;
-    const paginatedLoans = filteredLoans.slice(startIndex, startIndex + pageSize);
+    const paginatedLoans = this.paginationService.applyPagination(filteredLoans, this.currentPage(), this.pageSize());
     this.filteredLoans.set(paginatedLoans);
   }
   
   onPageChange(page: number): void {
-    console.log('Changing page to:', page);
     this.currentPage.set(page);
     this.filterLoans();
   }
   
   onPageSizeChange(event: Event): void {
     const target = event.target as HTMLSelectElement;
-    console.log('Changing page size to:', target.value);
     this.pageSize.set(Number(target.value));
     this.currentPage.set(1);
     this.filterLoans();
-  }
-
-  ngOnDestroy(): void {
-    console.log('unsubscribe 1 called');
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }

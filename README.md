@@ -30,7 +30,10 @@ cd financial-dashboard
 
 ### Виконайте команду для встановлення всіх необхідних залежностей:
 
-npm install
+#### Angular CDK
+npm install @angular/cdk
+#### Bootstrap
+npm install bootstrap
 
 ### Для запуску проекту виконайте команду:
 

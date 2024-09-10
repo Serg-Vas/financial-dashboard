@@ -20,7 +20,7 @@ export class FilterService {
       filtered = filtered.filter(loan => new Date(loan.return_date) <= new Date(filters.returnDateTo));
     }
     if (filters.showOverdueLoans) {
-      filtered = filtered.filter(loan => !loan.actual_return_date && new Date(loan.return_date) < new Date());
+      filtered = filtered.filter(loan => !loan.actual_return_date || new Date(loan.actual_return_date) > new Date(loan.return_date));
     }
 
     return filtered;

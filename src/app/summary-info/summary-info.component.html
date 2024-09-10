@@ -2,7 +2,7 @@
   <div class="metrics mt-4 body">
     <div class="mb-3">
       <label for="selectedMonth" class="form-label">Виберіть місяць:</label>
-      <input type="date" id="selectedMonth" class="form-control" [(ngModel)]="selectedMonth" (change)="calculateMetrics()">
+      <input type="month" id="selectedMonth" class="form-control" [(ngModel)]="selectedMonth" (change)="calculateMetrics()">
     </div>
     <div class="metrics mt-4">
       <h3>Метрики:</h3>
@@ -33,7 +33,7 @@
       <div class="section">
         <h3>Топ-10 користувачів за кількістю отриманих кредитів:</h3>
         <ul>
-          <li *ngFor="let user of topUsersByLoanCount()">{{ user.user }}: {{ user.count }} </li>
+          <li *ngFor="let user of topUsersByLoanCount()">{{ user.user }}: {{ user.count }} кредитів </li>
         </ul>
       </div>
 
